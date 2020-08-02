@@ -9,6 +9,7 @@ r,[core]/Modules,v5.0.0
 r,[core]/Oberon,v5.0.0
 r,[io-core]/Edit,v5.1.0
 r,[io-core]/Draw,v5.1.0
+p,Batch.Mod,
 p,Tools.Mod,caaeb80bab7998a82ecfb2999caa92137f56d874de3d5a1b468da15c5b52b455
 p,Blink.Mod,b41811953ad314d723c30e06e265b7acb36a2a1d55dbf029f04457b25e2e598b
 p,Math.Mod,01f751b10efcf5c9c3d65641dd04c61d186a96b2e62f240e40491208167705c3
