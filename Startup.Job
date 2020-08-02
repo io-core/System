@@ -1,0 +1,27 @@
+Batch.Run
+|> ORP.Compile Kernel.Mod/s FileDir.Mod/s Files.Mod/s Modules.Mod/s~
+|> Batch.Collect
+|> ORP.Compile Fonts.Mod/s Texts.Mod/s Input.Mod/s Display.Mod/s ~
+|> ORP.Compile Viewers.Mod/s Oberon.Mod/s ~
+|> ORP.Compile MenuViewers.Mod/s Graphics.Mod/s GraphicFrames.Mod/s ~
+|> ORP.Compile TextFrames.Mod/s Batch.Mod/s System.Mod/s ~
+|> ORP.Compile ORS.Mod/s ORB.Mod/s ORG.Mod/s ORP.Mod/s Linker.Mod/s ~
+|> ORP.Compile Edit.Mod/s Tools.Mod/s ORTool.Mod/s ~
+|>ORP.Compile Draw.Mod/s ~
+||
+
+ORP.Compile Bitmaps.Mod/s Images.Mod/s ImageFrames.Mod/s Paint.Mod/s~
+ORP.Compile KeyPairs.Mod/s KeySafes.Mod/s KeySafeFrames.Mod/s Attest.Mod/s~
+ORP.Compile Intrinsics.Mod/s Sessions.Mod/s Environments.Mod/s ScriptFrames.Mod/s Script.Mod/s~
+ORP.Compile Ciphers.Mod/s Vaults.Mod/s VaultFrames.Mod/s Crypto.Mod/s~
+ORP.Compile Mod.Mod/s PackageFrames.Mod/s Packages.Mod/s Resources.Mod/s~
+
+Curves.Mod     O7B.Mod           OIP.Mod           SCC.Mod                          
+               O7G.Mod                                                        
+Blink.Mod      O7Link.Mod        Display.Orig.Mod  MacroTool.Mod      ORC.Mod            PCLink1.Mod                                 
+BootLoad.Mod   O7P.Mod           Input.Orig.Mod    Math.Mod           PIO.Mod                                           
+Checkers.Mod   O7S.Mod           EBNF.Mod          GraphTool.Mod      Rectangles.Mod  Sierpinski.Mod               
+               O7Tool.Mod        Hennessey.Mod     SmallPrograms.Mod             
+Clipboard.Mod  Hilbert.Mod       RISC.Mod          Stars.Mod
+Net.Mod        OIG.Mod           RS232.Mod                 
+

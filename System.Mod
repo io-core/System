@@ -11,6 +11,8 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
 
   VAR W: Texts.Writer;
     pat: ARRAY 32 OF CHAR;
+    jobV: Viewers.Viewer;
+    jobM: TextFrames.CallMsg; 
 
   PROCEDURE GetArg(VAR S: Texts.Scanner);
     VAR T: Texts.Text; beg, end, time: LONGINT;
@@ -377,7 +379,11 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Oberon.AllocateSystemViewer(0, X, Y);
     menu := TextFrames.NewMenu("System.Tool", StandardMenu);
     main := TextFrames.NewText(TextFrames.Text("System.Tool"), 0);
-    toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
+    toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y);
+    Oberon.AllocateSystemViewer(0, X, Y);
+    menu := TextFrames.NewMenu("Startup.Job", StandardMenu);
+    main := TextFrames.NewText(TextFrames.Text("Startup.Job"), 0);
+    jobV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
   END OpenViewers;
 
   PROCEDURE ExtendDisplay*;
@@ -418,4 +424,6 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
 BEGIN Texts.OpenWriter(W);
   Oberon.OpenLog(TextFrames.Text("")); OpenViewers;
   Kernel.Install(SYSTEM.ADR(Trap), 20H); Kernel.Install(SYSTEM.ADR(Abort), 0);
+  jobM.offset := 0;
+  jobV.dsc.next.handle(jobV.dsc.next,jobM);
 END System.
