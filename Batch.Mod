@@ -47,9 +47,9 @@ MODULE Batch;
     Texts.OpenWriter(W);
     WHILE go DO
       Texts.Scan(S);
-      IF (S.class = Texts.Char) & (S.codepoint = ORD("\")) THEN
+      IF (S.class = Texts.Char) & (S.c = "\") THEN
         nl := FALSE
-      ELSIF (S.class = Texts.Char) & (S.codepoint = ORD("*")) THEN
+      ELSIF (S.class = Texts.Char) & (S.c = "*") THEN
         V := Viewers.This(Display.Width - 10, Display.Height - 10);
         TextFrames.Show(V.dsc.next(TextFrames.Frame), Oberon.Log.len);
       ELSIF S.class = Texts.Int THEN
