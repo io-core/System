@@ -1,3 +1,7 @@
+(* begin-module-description
+Module PCLink1 provides for serial connection between Oberon machines or Oberon and a host computer.
+
+end-module-description *)
 MODULE PCLink1;  (*NW 25.7.2013  for Oberon on RISC*)
   IMPORT SYSTEM, Files, Texts, Oberon;
   

@@ -1,3 +1,7 @@
+(* begin-module-description
+Module Hennessy is a suite of benchmarks for Oberon.
+
+end-module-description *)
 MODULE Hennessy;
 (*  This is a suite of benchmarks that are relatively short, both in program
     size and execution time.  It requires no input, and prints the execution

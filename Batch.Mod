@@ -1,3 +1,7 @@
+(* begin-module-description
+Module Batch provides for automatic sequential execution of Oberon commands.
+
+end-module-description *)
 MODULE Batch;
   IMPORT Kernel, FileDir, Files, Display, Texts, TextFrames, Viewers, Oberon;
 

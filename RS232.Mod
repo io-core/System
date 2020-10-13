@@ -1,3 +1,7 @@
+(* begin-module-description
+Module RS232 provides for serial communications in RISC Oberon.
+
+end-module-description *)
 MODULE RS232;   (*NW 3.1.2012*)
   IMPORT SYSTEM;
   CONST data = -56; stat = -52;
