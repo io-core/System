@@ -1,7 +1,7 @@
-(* begin-module-description
+(* begin-module-use-description
 Module PIO implements PIC input/output for RISC Oberon.
 
-end-module-description *)
+end-module-use-description *)
 MODULE PIO;   (*NW 16.10.2014  PIC Input/Output for RISC*)
   IMPORT SYSTEM;
   

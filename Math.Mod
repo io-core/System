@@ -1,7 +1,7 @@
-(* begin-module-description
+(* begin-module-use-description
 Module Math provides standard math functions in Oberon.
 
-end-module-description *)
+end-module-use-description *)
 MODULE Math;   (*Standard functions;  NW 12.10.2013*)
 
   PROCEDURE sqrt*(x: REAL): REAL;

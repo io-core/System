@@ -3,10 +3,10 @@ The System package collects the expected set of modules and tools that allows th
 
 end-package-description *)
 
-(* begin-module-description
+(* begin-module-use-description
 Module System presents the Oberon user with tools and commands for interacting Displays and Tracks and Files and other miscelaneous features.
 
-end-module-description *)
+end-module-use-description *)
 MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016 / AP 6.9.20 Extended Oberon*)
   IMPORT SYSTEM, Kernel, Disk, FileDir, Files, Modules,
     Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers, TextFrames;

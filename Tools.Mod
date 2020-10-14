@@ -1,7 +1,7 @@
-(* begin-module-description
+(* begin-module-use-description
 Module Tools provides commands for inspecting memory, disk, etc.
 
-end-module-description *)
+end-module-use-description *)
 MODULE Tools;   (*NW 22.2.14 / AP 22.3.20 Extended Oberon*)
   IMPORT SYSTEM, Kernel, Disk, Files, Modules, Input, Texts, Viewers, Oberon, MenuViewers, TextFrames;
 
