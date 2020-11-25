@@ -1,23 +1,21 @@
 k,v1,v2
-package,System,v5.1.0
+package,System,v5.0.20160620
 from,github.com/io-core,
 license,PROJECTOBERON,NW PR JG
 doc,core,prepares the user interface and manages viewers for the user.
-r,[io-core]/Paint,v1.0.0
 r,[core]/Kernel,v5.0.0
 r,[core]/Files,v5.0.0
 r,[core]/Modules,v5.0.0
 r,[core]/Oberon,v5.0.0
-r,[io-core]/Edit,v5.1.0
-r,[io-core]/Draw,v5.1.0
-p,System.Mod,
+r,[core]/Edit,v5.0.0
+r,[core]/Draw,v5.0.0
+p,System.Mod,215e86c25a1499d0ee5e63f1a1f3ce4230422f12964752155ea291b478773a08
+p,MenuViewers.Mod,c91c52dd1441f545057467b6bc3122fa0a09550a0f8d7dc40e812c43f3602b7b
+p,PIO.Mod,3a2b9d960dae5ddbbdd1ee6db7667b47670d80957eca866264940d0cd704c0cf
+p,Tools.Mod,309c689adf4a0148e6f373bac1dfe7a2747d8b5d1492ea78507b933dd14816aa
+p,PCLink1.Mod,b49cd9b51c89a3adc27b5f317105d8bb9c4f4addb1bef2921ade6b432c6f2ad3
+p,RS232.Mod,76e277553b26612b90160f41b8341dfc1f7648d8ac89b78a48b53a91a989630f
+p,Net.Mod,8b653ac5aa471c6fcd6637109c8f3ae2f88b127ce3051c5d77c3496a34c690bd
+p,SCC.Mod,a172c720b47b5508b4fb27381dc9665de99c7470f6b9c9397ece5ff08cf17725
 p,Batch.Mod,
-p,Tools.Mod,
-p,Blink.Mod,
-p,Math.Mod,
-p,PCLink1.Mod,
-p,PIO.Mod,
-p,RS232.Mod,
-p,Net.Mod,
-p,SCC.Mod,
-p,BootLoad.Mod,
+p,Halt.Mod,
