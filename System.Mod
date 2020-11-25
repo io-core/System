@@ -12,22 +12,25 @@ Module System presents the Oberon user with tools and commands for interacting D
 
 end-module-use-description *)
 MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
-  IMPORT SYSTEM, Kernel, FileDir, Files, Modules, Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers, TextFrames;
+               (*MS 1.2019 adapted for Unicode*)
+
+
+  IMPORT SYSTEM, Kernel, FileDir, Files, Modules,
+    Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers, TextFrames;
 
   CONST
     StandardMenu = "System.Close System.Copy System.Grow Edit.Search Edit.Store";
     LogMenu = "Edit.Locate Edit.Search System.Copy System.Grow System.Clear Halt.Now";
 
-  TYPE
-
-  VAR 
-    W: Texts.Writer;
+  VAR W: Texts.Writer;
     pat: ARRAY 32 OF CHAR;
+    jobV: Viewers.Viewer;
+    jobM: TextFrames.CallMsg; 
 
   PROCEDURE GetArg(VAR S: Texts.Scanner);
     VAR T: Texts.Text; beg, end, time: LONGINT;
   BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
-    IF (S.class = Texts.Char) & (S.c = "^") THEN
+    IF (S.class = Texts.Char) & (S.codepoint = ORD("^")) THEN
       Oberon.GetSelection(T, beg, end, time);
       IF time >= 0 THEN Texts.OpenScanner(S, T, beg); Texts.Scan(S) END
     END
@@ -40,13 +43,13 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
   (* ------------- Toolbox for system control ---------------*)
 
   PROCEDURE SetUser*;
-    VAR i: INTEGER; ch: CHAR;
+    VAR i, codepoint: INTEGER; ch: CHAR;
       user: ARRAY 8 OF CHAR;
       password: ARRAY 16 OF CHAR;
-  BEGIN i := 0; Input.Read(ch);
-    WHILE (ch # "/") & (i < 7) DO user[i] := ch; INC(i); Input.Read(ch) END;
-    user[i] := 0X; i := 0; Input.Read(ch);
-    WHILE (ch > " ") & (i < 15) DO password[i] := ch; INC(i); Input.Read(ch) END;
+  BEGIN i := 0; Input.ReadUnicode(codepoint); ch := CHR(codepoint MOD 80H);
+    WHILE (ch # "/") & (i < 7) DO user[i] := ch; INC(i); Input.ReadUnicode(codepoint); ch := CHR(codepoint MOD 80H) END;
+    user[i] := 0X; i := 0; Input.ReadUnicode(codepoint); ch := CHR(codepoint MOD 80H);
+    WHILE (ch > " ") & (i < 15) DO password[i] := ch; INC(i); Input.ReadUnicode(codepoint); ch := CHR(codepoint MOD 80H) END;
     password[i] := 0X; Oberon.SetUser(user, password)
   END SetUser;
 
@@ -168,7 +171,7 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
       S: Texts.Scanner;
   BEGIN Texts.WriteString(W, "System.Free"); EndLine;
     Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
-    IF (S.class = Texts.Char) & (S.c = "^") THEN
+    IF (S.class = Texts.Char) & (S.codepoint = ORD("^")) THEN
       Oberon.GetSelection(T, beg, end, time);
       IF time >= 0 THEN Texts.OpenScanner(S, T, beg); Texts.Scan(S);
         IF S.class = Texts.Name THEN Free1(S) END
@@ -224,7 +227,7 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
       pre: ARRAY 32 OF CHAR;
   BEGIN Texts.OpenReader(R, Oberon.Par.text, Oberon.Par.pos); Texts.Read(R, ch);
     WHILE ch = " " DO Texts.Read(R, ch) END;
-    IF (ch = "^") OR (ch = 0DX) THEN
+    IF (ch = "^") OR (ch = 0DX) OR (ch = 0AX) THEN
       Oberon.GetSelection(T, beg, end, time);
       IF time >= 0 THEN
         Texts.OpenReader(R, T, beg); Texts.Read(R, ch);
@@ -253,8 +256,8 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Texts.WriteString(W, "System.CopyFiles"); EndLine;
     WHILE S.class = Texts.Name DO
       name := S.s; Texts.Scan(S);
-      IF (S.class = Texts.Char) & (S.c = "=") THEN Texts.Scan(S);
-        IF (S.class = Texts.Char) & (S.c = ">") THEN Texts.Scan(S);
+      IF (S.class = Texts.Char) & (S.codepoint = ORD("=")) THEN Texts.Scan(S);
+        IF (S.class = Texts.Char) & (S.codepoint = ORD(">")) THEN Texts.Scan(S);
           IF S.class = Texts.Name THEN
             Texts.WriteString(W, name); Texts.WriteString(W, " => "); Texts.WriteString(W, S.s);
             Texts.WriteString(W, " copying"); Texts.Append(Oberon.Log, W.buf);
@@ -281,8 +284,8 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Texts.WriteString(W, "System.RenameFiles"); EndLine;
     WHILE S.class = Texts.Name DO
       name := S.s; Texts.Scan(S);
-      IF (S.class = Texts.Char) & (S.c = "=") THEN Texts.Scan(S);
-        IF (S.class = Texts.Char) & (S.c = ">") THEN Texts.Scan(S);
+      IF (S.class = Texts.Char) & (S.codepoint = ORD("=")) THEN Texts.Scan(S);
+        IF (S.class = Texts.Char) & (S.codepoint = ORD(">")) THEN Texts.Scan(S);
           IF S.class = Texts.Name THEN
             Texts.WriteString(W, name); Texts.WriteString(W, " => "); Texts.WriteString(W, S.s);
             Texts.WriteString(W, " renaming"); Files.Rename(name, S.s, res);
@@ -389,7 +392,11 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Oberon.AllocateSystemViewer(0, X, Y);
     menu := TextFrames.NewMenu("System.Tool", StandardMenu);
     main := TextFrames.NewText(TextFrames.Text("System.Tool"), 0);
-    toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
+    toolV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y);
+    Oberon.AllocateSystemViewer(0, X, Y);
+    menu := TextFrames.NewMenu("Startup.Job", StandardMenu);
+    main := TextFrames.NewText(TextFrames.Text("Startup.Job"), 0);
+    jobV := MenuViewers.New(menu, main, TextFrames.menuH, X, Y)
   END OpenViewers;
 
   PROCEDURE ExtendDisplay*;
@@ -430,4 +437,6 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
 BEGIN Texts.OpenWriter(W);
   Oberon.OpenLog(TextFrames.Text("")); OpenViewers;
   Kernel.Install(SYSTEM.ADR(Trap), 20H); Kernel.Install(SYSTEM.ADR(Abort), 0);
+  jobM.offset := 0;
+  jobV.dsc.next.handle(jobV.dsc.next,jobM);
 END System.
