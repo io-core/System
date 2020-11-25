@@ -212,7 +212,7 @@ System.Date");
   PROCEDURE GetPar(VAR S: Texts.Scanner; VAR end: LONGINT);
     VAR T: Texts.Text; beg, tm: LONGINT;
   BEGIN Texts.Scan(S);
-    IF (S.class = Texts.Char) & (S.c = "^") THEN
+    IF (S.class = Texts.Char) & (S.codepoint = ORD("^")) THEN
       Oberon.GetSelection(T, beg, end, tm);
       IF tm >= 0 THEN Texts.OpenScanner(S, T, beg); Texts.Scan(S) END
     ELSE end := Oberon.Par.text.len
