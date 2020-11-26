@@ -8,7 +8,7 @@ end-module-use-description *)
 MODULE MenuViewers; (*JG 26.8.90 / 16.9.93 / NW 10.3.2013*)
   IMPORT Input, Display, Viewers, Oberon;
 
-  CONST extend* = 0; reduce* = 1; FrameColor = Display.white;
+  CONST extend* = 0; reduce* = 1; FrameColor = 1 (*Display.white*);
 
   TYPE Viewer* = POINTER TO ViewerDesc;
 
