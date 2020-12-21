@@ -172,10 +172,14 @@ BEGIN
 (*
 	Display.ReplConst(Display.white, XDum, YDum, f.Kasten-1, f.Kasten-1, Display.paint);
 *)
+(*
  	Display.ReplConst(Display.white, XDum, YDum, f.Kasten-1, f.Kasten-1, Display.paint);
+*)
  	Display.ReplConst(Display.black, XDum+1, YDum+1, f.Kasten-3, f.Kasten-3, Display.replace);
- 	Display.ReplPattern(COLOR, pat[COLOR], XDum+1, YDum+1, f.Kasten-3, f.Kasten-3, Display.paint)
+ 	Display.ReplPattern(COLOR, pat[COLOR], XDum+1, YDum+1, f.Kasten-3, f.Kasten-3, Display.paint);
+(*
 	Display.ReplConst(COLOR, XDum+1, YDum+1, f.Kasten-3, f.Kasten-3, Display.paint)
+*)
 END DrawKasten;
 
 (* Clear one Kasten *)
