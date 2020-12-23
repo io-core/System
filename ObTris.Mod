@@ -169,9 +169,9 @@ PROCEDURE DrawKasten(f: Frame; x, y, COLOR: INTEGER);
 BEGIN
 	XDum:=f.XOffset+(f.Kasten*(x-1));
 	YDum:=f.YOffset+(f.Kasten*(y-1));
-(*
+
 	Display.ReplConst(Display.white, XDum, YDum, f.Kasten-1, f.Kasten-1, Display.paint);
-*)
+
 (*
  	Display.ReplConst(Display.white, XDum, YDum, f.Kasten-1, f.Kasten-1, Display.paint);
 *)
