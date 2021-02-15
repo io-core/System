@@ -7,7 +7,7 @@ Module I provides for "Intelligent content-based data manipulation commands.
 
 end-module-use-description *)
 MODULE I;
-  IMPORT Texts, Viewers, Oberon, TextFrames, MenuViewers, Syste, Edit;
+  IMPORT Texts, Viewers, Oberon, TextFrames, MenuViewers, System, Edit;
 
   CONST
 
@@ -34,7 +34,7 @@ MODULE I;
         Oberon.AllocateUserViewer(Oberon.Par.vwr.X, X, Y);
       ELSE
         Oberon.AllocateSystemViewer(Oberon.Par.vwr.X, X, Y);
-      END
+      END;
       V := MenuViewers.New(
         TextFrames.NewMenu(S.s, "System.Close System.Copy System.Grow Edit.Search Edit.Store"),
         TextFrames.NewText(TextFrames.Text(S.s), 0),
