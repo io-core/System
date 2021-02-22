@@ -1,3 +1,27 @@
+(* begin-documentation-node
+#######################
+  IO Standard Packages
+#######################
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Development:
+   :hidden:
+
+   ../Assist/Assist [stdlib/Assist.rst]
+   ../Attest/Attest [stdlib/Attest.rst]
+   ../Crypto/Crypto [stdlib/Crypto.rst]
+   ../Doc/Doc       [stdlib/Doc.rst]
+   ../Draw/Draw     [stdlib/Draw.rst]
+   ../Paint/Paint   [stdlib/Paint.rst]
+   ../Mod/Mod       [stdlib/Mod.rst]
+
+Standard Library documentation starts here...
+
+https://github.com/io-core/System/blob/main/System.Mod
+
+end-documentation-node *)
 (* begin-package-description
 ### _Package Overview:_
 The System package collects the expected set of modules and tools that allows the Oberon user to perform typical computing tasks.
@@ -7,6 +31,10 @@ The System package collects the expected set of modules and tools that allows th
 ### _Modules in this package:_
 end-package-description *)
 
+(* begin-module-short-description
+defines the tiling user interface and inital environment of Oberon.
+end-module-short-description *)
+
 (* begin-module-use-description
 Module System presents the Oberon user with tools and commands for interacting Displays and Tracks and Files and other miscelaneous features.
 
@@ -14,13 +42,13 @@ end-module-use-description *)
 MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
                (*MS 1.2019 adapted for Unicode*)
 
-
-  IMPORT SYSTEM, Kernel, FileDir, Files, Modules,
-    Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers, TextFrames;
+  IMPORT SYSTEM, Kernel, FileDir, Files, Modules, Input, Display, Viewers, Fonts, Texts, Oberon, MenuViewers, TextFrames;
 
   CONST
     StandardMenu = "System.Close System.Copy System.Grow Edit.Search Edit.Store";
     LogMenu = "Edit.Locate Edit.Search System.Copy System.Grow System.Clear Halt.Now";
+
+  TYPE
 
   VAR W: Texts.Writer;
     pat: ARRAY 32 OF CHAR;
