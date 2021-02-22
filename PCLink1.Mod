@@ -9,6 +9,8 @@ MODULE PCLink1;  (*NW 25.7.2013  for Oberon on RISC*)
     BlkLen = 255;
     REQ = 20H; REC = 21H; SND = 22H; ACK = 10H; NAK = 11H;
 
+  TYPE
+
   VAR T: Oberon.Task;
     W: Texts.Writer;
 

@@ -12,6 +12,10 @@ MODULE PIO;   (*NW 16.10.2014  PIC Input/Output for RISC*)
 
   CONST gpio = -32; gpoc = -28;  (*I/O addresses*)
 
+  TYPE
+
+  VAR
+
   PROCEDURE del(i: INTEGER);
   BEGIN
     REPEAT DEC(i) UNTIL i = 0

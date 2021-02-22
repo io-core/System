@@ -9,6 +9,8 @@ MODULE Net; (*NW 3.7.88 / 25.8.91 / PR 7.8.13 / 9.12.13*)
     SND = 41H; REC = 42H; MSG = 44H;
     TRQ = 46H; TIM = 47H; (*time requests*)
 
+  TYPE
+
   VAR W: Texts.Writer;
      Server: Oberon.Task;
      head0, head1: SCC.Header;

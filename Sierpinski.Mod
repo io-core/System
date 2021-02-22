@@ -1,7 +1,13 @@
+(* begin-module-short-description
+draws a Sierpinski square.
+end-module-short-description *)
+
 MODULE Sierpinski;  (*NW 15.1.2013*)
   IMPORT Display, Viewers, Oberon, MenuViewers, TextFrames;
 
   CONST Menu = "System.Close  System.Copy  System.Grow";
+
+  TYPE
 
   VAR x, y, d: INTEGER;
     A, B, C, D: PROCEDURE (i: INTEGER);

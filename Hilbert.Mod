@@ -1,7 +1,13 @@
+(* begin-module-short-description
+draws a Hilbert square.
+end-module-short-description *)
+
 MODULE Hilbert;  (*NW 8.1.2013  for RISC*)
   IMPORT Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
 
   CONST Menu = "System.Close  System.Copy  System.Grow";
+
+  TYPE
 
   VAR x, y, d: INTEGER;
     A, B, C, D: PROCEDURE (i: INTEGER);
