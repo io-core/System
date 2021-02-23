@@ -16,6 +16,7 @@
    ../Draw/Draw     [stdlib/Draw.rst]
    ../Paint/Paint   [stdlib/Paint.rst]
    ../Mod/Mod       [stdlib/Mod.rst]
+   ../Test/Test     [stdlib/Test.rst]
 
 Standard Library documentation starts here...
 
@@ -23,12 +24,9 @@ https://github.com/io-core/System/blob/main/System.Mod
 
 end-documentation-node *)
 (* begin-package-description
-### _Package Overview:_
 The System package collects the expected set of modules and tools that allows the Oberon user to perform typical computing tasks.
 
-### _Package Use:_
 
-### _Modules in this package:_
 end-package-description *)
 
 (* begin-module-short-description
