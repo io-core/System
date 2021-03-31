@@ -9,14 +9,15 @@
    :caption: Development:
    :hidden:
 
-   ../Assist/Assist [stdlib/Assist.rst]
-   ../Attest/Attest [stdlib/Attest.rst]
-   ../Crypto/Crypto [stdlib/Crypto.rst]
-   ../Doc/Doc       [stdlib/Doc.rst]
-   ../Draw/Draw     [stdlib/Draw.rst]
-   ../Paint/Paint   [stdlib/Paint.rst]
-   ../Mod/Mod       [stdlib/Mod.rst]
-   ../Test/Test     [stdlib/Test.rst]
+   ../Assist/Assist     [stdlib/Assist.rst]
+   ../Attest/Attest     [stdlib/Attest.rst]
+   ../Crypto/Crypto     [stdlib/Crypto.rst]
+   ../Doc/Doc           [stdlib/Doc.rst]
+   ../Draw/Draw         [stdlib/Draw.rst]
+   ../Paint/Paint       [stdlib/Paint.rst]
+   ../Mod/Mod           [stdlib/Mod.rst]
+   ../ArgParse/ArgParse [stdlib/ArgParse.rst]
+   ../Test/Test         [stdlib/Test.rst]
 
 Standard Library documentation starts here...
 
