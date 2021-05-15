@@ -451,8 +451,10 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
       Texts.WriteString(W, "  TRAP"); Texts.WriteInt(W, w, 4); mod := Modules.root;
       WHILE (mod # NIL) & ((u < mod.code) OR (u >= mod.imp)) DO mod := mod.next END ;
       IF mod # NIL THEN Texts.WriteString(W, " in "); Texts.WriteString(W, mod.name) END ;
-      Texts.WriteString(W, " at"); Texts.WriteHex(W, u);
-      Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf); Oberon.Reset
+      Texts.WriteString(W, " at"); Texts.WriteHex(W, u); Texts.WriteLn(W); 
+      u := SYSTEM.REG(14); Texts.WriteString(W, " stackPtr"); Texts.WriteHex(W, u); 
+      Texts.WriteString(W, " stackOrg"); Texts.WriteHex(W, Kernel.stackOrg); Texts.WriteLn(W); 
+      Texts.Append(Oberon.Log, W.buf); Oberon.Reset
     END
   END Trap;
 
