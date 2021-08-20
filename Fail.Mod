@@ -75,6 +75,17 @@ MODULE Fail;   (*NW 30.5.2013, CP 2021*)
 
   (* begin-procedure-description
 ---
+**Bounds** generates a bounds check failure.
+  end-procedure-description *)
+  PROCEDURE Bounds*;
+    VAR rd: RDesc; x,i: INTEGER;
+  BEGIN 
+    x:=0; WHILE x < 10 DO i:=rd.a[x]; INC(x) END  (* out of bounds error *)
+  END Bounds;
+
+
+  (* begin-procedure-description
+---
 **Assert** generates an assertion failure.
   end-procedure-description *)
   PROCEDURE Assert*;
@@ -91,16 +102,6 @@ MODULE Fail;   (*NW 30.5.2013, CP 2021*)
   BEGIN i:=r.a[0]  (* nil pointer error *)
   END Nil;
 
-
-  (* begin-procedure-description
----
-**Bounds** generates a bounds check failure.
-  end-procedure-description *)
-  PROCEDURE Bounds*;
-    VAR rd: RDesc; x,i: INTEGER;
-  BEGIN 
-    x:=0; WHILE x < 10 DO i:=rd.a[x]; INC(x) END  (* out of bounds error *)
-  END Bounds;
 
   (* begin-procedure-description
 ---

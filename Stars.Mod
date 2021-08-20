@@ -1,3 +1,7 @@
+(* begin-module-short-description
+places stars and animates them in a task.
+end-module-short-description *)
+
 MODULE Stars;   (*NW 15.1.2013, 15.11.2013*)
   IMPORT SYSTEM, Display, Viewers, Texts, Oberon, MenuViewers, TextFrames;
 

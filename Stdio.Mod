@@ -12,34 +12,34 @@ MODULE Stdio;
   CONST
 
   TYPE
+    Consumer* = PROCEDURE (T: Texts.Text; op: INTEGER; beg, end: LONGINT);
+    Stream* = RECORD (* (Texts.Text)  *)
+      consume*: Consumer;
+      limit*: INTEGER;
+    END;
+
+    Flow* = POINTER TO FlowDesc;
+    FlowDesc* = RECORD
+      T*: Texts.Text;
+      V*: Viewers.Viewer;
+      X*, Y*: INTEGER;
+      user*: BOOLEAN
+    END;
 
   VAR
 
 
-  PROCEDURE Open*;
-    VAR T: Texts.Text;
-    S: Texts.Scanner;
-    V: Viewers.Viewer;
-    X, Y: INTEGER;
-    beg, end, time: LONGINT;
-    user: BOOLEAN;
-  BEGIN Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
-    IF (S.class = Texts.Char) & (S.codepoint = ORD("^")) OR (S.line # 0) THEN
-      Oberon.GetSelection(T, beg, end, time);
-      IF time >= 0 THEN Texts.OpenScanner(S, T, beg); Texts.Scan(S) END
-    END;
-    IF S.class = Texts.Name THEN
-      user:=TRUE;
-      IF user THEN
-        Oberon.AllocateUserViewer(Oberon.Par.vwr.X, X, Y);
+  PROCEDURE Open*(VAR F: Flow);
+  BEGIN 
+      IF F.user THEN
+        Oberon.AllocateUserViewer(0, F.X, F.Y);
       ELSE
-        Oberon.AllocateSystemViewer(Oberon.Par.vwr.X, X, Y);
+        Oberon.AllocateSystemViewer(0, F.X, F.Y);
       END;
-      V := MenuViewers.New(
-        TextFrames.NewMenu(S.s, "System.Close System.Copy System.Grow Edit.Search Edit.Store"),
-        TextFrames.NewText(TextFrames.Text(S.s), 0),
-        TextFrames.menuH, X, Y)
-    END
+      F.V := MenuViewers.New(
+        TextFrames.NewMenu("MenuTitle", "System.Close System.Copy System.Grow Edit.Search Edit.Store"),
+        TextFrames.NewText(TextFrames.Text("Title"), 0),
+        TextFrames.menuH, F.X, F.Y)
   END Open;
 
 

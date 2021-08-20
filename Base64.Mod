@@ -34,7 +34,7 @@ IMPORT SYSTEM, Texts, Oberon;
 ---
 **Decode** decodes a base64 text.
   end-procedure-description *)
-  PROCEDURE Decode*(VAR R: Texts.Reader; VAR W:Texts.Writer);
+  PROCEDURE Decode*(VAR S: Texts.Stream);
     VAR
       codes: ARRAY 4 OF INTEGER;
       i: INTEGER;
@@ -42,40 +42,41 @@ IMPORT SYSTEM, Texts, Oberon;
       ok, end: BOOLEAN;
   BEGIN
     ok := TRUE; end := FALSE;
-    Texts.Read(R,ch);
+    Texts.Read(S.in,ch);
 
     REPEAT
       i := 0;
       WHILE ok & (i < 4) DO
-        WHILE ch<=" " DO Texts.Read(R,ch); END;
+        WHILE ch<=" " DO Texts.Read(S.in,ch); END;
           codes[i] := decTable[ORD(ch)];
           ok := codes[i] >= 0; INC(i);
-          IF ok THEN Texts.Read(R,ch) END;
+          IF ok THEN Texts.Read(S.in,ch) END;
         END;
         IF i > 0 THEN
           IF ok THEN
-            Texts.Write(W,CHR(codes[0] * 4 + codes[1] DIV 16));
-            Texts.Write(W,CHR(codes[1] * 16 + codes[2] DIV 4));
-            Texts.Write(W,CHR(codes[2] * 64 + codes[3]))
+            Texts.Write(S.out,CHR(codes[0] * 4 + codes[1] DIV 16));
+            Texts.Write(S.out,CHR(codes[1] * 16 + codes[2] DIV 4));
+            Texts.Write(S.out,CHR(codes[2] * 64 + codes[3]))
           ELSIF ch = "=" THEN
             ok := TRUE; end := TRUE; DEC(i);
-            IF i = 2 THEN Texts.Write(W, CHR(codes[0] * 4 + codes[1] DIV 64))
+            IF i = 2 THEN Texts.Write(S.out, CHR(codes[0] * 4 + codes[1] DIV 64))
             ELSIF i = 3 THEN
-              Texts.Write(W, CHR(codes[0] * 4 + codes[1] DIV 64));
-              Texts.Write(W, CHR(codes[1] * 16 + codes[2] DIV 4))
+              Texts.Write(S.out, CHR(codes[0] * 4 + codes[1] DIV 64));
+              Texts.Write(S.out, CHR(codes[1] * 16 + codes[2] DIV 4))
             ELSIF i # 0 THEN ok := FALSE
             END
           ELSIF i = 4 THEN
             ok := TRUE; end := TRUE;
-            Texts.Write(W, CHR(codes[0] * 4 + codes[1] DIV 16 ));
-            Texts.Write(W, CHR(codes[1] * 16 + codes[2] DIV 4 ));
-            Texts.Write(W, CHR(codes[2] * 64 + codes[3]))
+            Texts.Write(S.out, CHR(codes[0] * 4 + codes[1] DIV 16 ));
+            Texts.Write(S.out, CHR(codes[1] * 16 + codes[2] DIV 4 ));
+            Texts.Write(S.out, CHR(codes[2] * 64 + codes[3]))
           ELSIF i = 1 THEN ok := TRUE; end := TRUE
         END
       ELSE
         end := TRUE
       END;
-    UNTIL end;                     (* Streams.Update(W); *)
+    UNTIL end;
+    Texts.UpdateStream(S); 
   END Decode;
 
 
@@ -83,43 +84,43 @@ IMPORT SYSTEM, Texts, Oberon;
 ---
 **Encode** encodes a base64 text.
   end-procedure-description *)
-  PROCEDURE Encode*(VAR R:Texts.Reader; VAR W:Texts.Writer);
+  PROCEDURE Encode*(VAR S:Texts.Stream);
     VAR
       i, j, k, c, c0, c1, c2, l: LONGINT;
       chars: ARRAY 3 OF CHAR;
 
   BEGIN
     l := 0;
-    Texts.Read(R,chars[0]); i := 1;
-    WHILE ~R.eot DO
+    Texts.Read(S.in,chars[0]); i := 1;
+    WHILE ~S.in.eot DO
       IF i >= 3 THEN 
 
         (* OutCode(i); *)
         k:=j;
-        IF l > 80 THEN	Texts.WriteLn(W); l := 0 END;
+        IF l > 80 THEN	Texts.WriteLn(S.out); l := 0 END;
 
         c0 :=ORD(chars[0]);
         c := (c0 DIV 4);
-        Texts.Write(W, encTable[c]);
+        Texts.Write(S.out, encTable[c]);
 
         c0 := c0-(c * 4); (* 2 *)
         c1 := ORD(chars[1]);
         c := (c0 * 16) + (c1 DIV 16);
-        IF k>=1 THEN Texts.Write(W,encTable[c MOD 64]); END;
+        IF k>=1 THEN Texts.Write(S.out,encTable[c MOD 64]); END;
 
         c1 := c1 MOD (1 * 16);
         c2 := ORD(chars[2]);
         c := (c1 * 4)+(c2 DIV 64);
-        IF k>=2 THEN Texts.Write(W,encTable[c MOD 64]); END;
+        IF k>=2 THEN Texts.Write(S.out,encTable[c MOD 64]); END;
 
         c2 := c2 MOD (1 * 64);
-        IF k>=3 THEN Texts.Write(W,encTable[c2 MOD 64]); END;
+        IF k>=3 THEN Texts.Write(S.out,encTable[c2 MOD 64]); END;
         INC(l, 4);
         (* End OutCode(i); *)
 
         i := 0 
       END;
-      Texts.Read(R,chars[i]); INC(i)
+      Texts.Read(S.in,chars[i]); INC(i)
     END;
     DEC(i);
     IF i > 0 THEN
@@ -128,29 +129,30 @@ IMPORT SYSTEM, Texts, Oberon;
 
       (* OutCode(j);*)
       k:=j;
-      IF l > 80 THEN	Texts.WriteLn(W); l := 0 END;
+      IF l > 80 THEN	Texts.WriteLn(S.out); l := 0 END;
 
       c0 :=ORD(chars[0]);
       c := (c0 DIV 4);
-      Texts.Write(W, encTable[c MOD 64]);
+      Texts.Write(S.out, encTable[c MOD 64]);
 
       c0 := c0-(c * 4);
       c1 := ORD(chars[1]);
       c := (c0 * 16)+(c1 DIV 16);
-      IF k>=1 THEN Texts.Write(W,encTable[c MOD 64]); END;
+      IF k>=1 THEN Texts.Write(S.out,encTable[c MOD 64]); END;
 
       c1 := c1 MOD (1 * 16);
       c2 := ORD(chars[2]);
       c := (c1 * 4)+(c2 DIV 64);
-      IF k>=2 THEN Texts.Write(W,encTable[c MOD 64]); END;
+      IF k>=2 THEN Texts.Write(S.out,encTable[c MOD 64]); END;
 
       c2 := c2 MOD (1 * 64);
-      IF k>=3 THEN Texts.Write(W,encTable[c2 MOD 64]); END;
+      IF k>=3 THEN Texts.Write(S.out,encTable[c2 MOD 64]); END;
       INC(l, 4);
       (* End OutCode(j); *)
 
-      WHILE j<3 DO Texts.Write(W,"="); INC(j) END;
-    END;     (* Streams.Update(W); *)
+      WHILE j<3 DO Texts.Write(S.out,"="); INC(j) END;
+    END;
+    Texts.UpdateStream(S); 
   END Encode;
 
 
@@ -178,12 +180,11 @@ IMPORT SYSTEM, Texts, Oberon;
 ---
 **decode** defines the procedure assigned to a Text procedure variable to 'pump' appended data downstream for decoding.
   end-procedure-description *)
-  PROCEDURE decode(X: Texts.Text; I: Texts.Buffer):Texts.Buffer;
-    VAR W:Texts.Writer; R: Texts.Reader; T: Texts.Text;
+  PROCEDURE decode(I: Texts.Buffer):Texts.Buffer;
+    VAR S:Texts.Stream; T: Texts.Text;
   BEGIN
-    NEW(T); Texts.FromBuffer(T,I); Texts.OpenReader(R,T,0);
-    Texts.OpenWriter(W); Decode(R,W);
-  RETURN W.buf
+    NEW(T); Texts.FromBuffer(T,I); Texts.OpenStream(S,T,0); Decode(S);
+  RETURN S.out.buf
   END decode;
 
 
@@ -191,12 +192,11 @@ IMPORT SYSTEM, Texts, Oberon;
 ---
 **encode** defines the procedure assigned to a Text procedure variable to 'pump' appended data downstream for encoding.
   end-procedure-description *)
-  PROCEDURE encode(X: Texts.Text; I: Texts.Buffer):Texts.Buffer;
-    VAR W:Texts.Writer; R: Texts.Reader; T: Texts.Text;
+  PROCEDURE encode(I: Texts.Buffer):Texts.Buffer;
+    VAR S:Texts.Stream; T: Texts.Text;
   BEGIN
-    NEW(T); Texts.FromBuffer(T,I); Texts.OpenReader(R,T,0);
-    Texts.OpenWriter(W); Encode(R,W);
-  RETURN W.buf
+    NEW(T); Texts.FromBuffer(T,I); Texts.OpenStream(S,T,0); Encode(S);
+  RETURN S.out.buf
   END encode;
 
 	
@@ -208,18 +208,24 @@ IMPORT SYSTEM, Texts, Oberon;
   PROCEDURE Test*;
     VAR T:Texts.Text; plain, base64: ARRAY 80 OF CHAR; L: Texts.Writer; R: Texts.Reader; i: INTEGER; ch: CHAR;
   BEGIN
-  Texts.OpenWriter(L); Texts.WriteString(L, "Oberon-07 Base64 4.23.2021");
-  Texts.WriteLn(L); Texts.Append(Oberon.Log, L.buf);
+  Texts.OpenWriter(L); Texts.WriteString(L, "Base64 encoding/decoding test"); Texts.WriteLn(L); Texts.Append(Oberon.Log, L.buf);
 	
+(*
+  Streams.RSet(R,'admin:1234');
+  Encode(R,W);
+  Streams.WGet(W,base64);
+*)
+
   Texts.WriteString(L, "admin:1234 => "); Texts.Append(Oberon.Log, L.buf);
 
   (* emitter driven *)
-  NEW(T); T.aproc:=encode; Texts.Open(T,"");
-  Texts.WriteString(L, "admin:1234"); Texts.Append(T,L.buf) (* stream processing happens here *);
-  Texts.OpenReader(R,T,0);
-  i:=0; Texts.Read(R,ch); 
-  WHILE (i < 80) & ( ~R.eot) DO base64[i]:=ch; Texts.Read(R,ch); INC(i) END;
-  IF i < 80 THEN base64[i]:=0X END;
+
+  NEW(T); T.aproc:=encode; Texts.Open(T,""); Texts.WriteString(L, "admin:1234"); 
+
+  Texts.Append(T,L.buf) (* stream processing happens here *);
+
+  Texts.OpenReader(R,T,0);  i:=0; Texts.Read(R,ch);   WHILE (i < 80) & ( ~R.eot) DO base64[i]:=ch; Texts.Read(R,ch); INC(i) END;  IF i < 80 THEN base64[i]:=0X END;
+
   Texts.WriteString(L,base64); Texts.WriteString(L, " => "); Texts.Append(Oberon.Log, L.buf);
 
   NEW(T); T.aproc:=decode; Texts.Open(T,"");
@@ -228,7 +234,7 @@ IMPORT SYSTEM, Texts, Oberon;
   i:=0; Texts.Read(R,ch); 
   WHILE (i < 80) & ( ~R.eot) DO base64[i]:=ch; Texts.Read(R,ch); INC(i) END;
   IF i < 80 THEN base64[i]:=0X END;
-   Texts.WriteString(L,base64); Texts.WriteLn(L); Texts.Append(Oberon.Log, L.buf);
+  Texts.WriteString(L,base64); Texts.WriteLn(L); Texts.Append(Oberon.Log, L.buf);
 
 
 
@@ -236,21 +242,6 @@ IMPORT SYSTEM, Texts, Oberon;
 
   (* consumer driven *)
 
-(*
-  Streams.RSet(R,'admin:1234');
-  Encode(R,W);
-  Streams.WGet(W,base64);
-  Texts.WriteString(L,base64); Texts.WriteString(L," => ");
-*)
-
-(*
-  NEW(W); NEW(R); (* ,80 *)
-  Streams.RSet(R,base64);
-  Decode(R,W);
-  Streams.WGet(W,plain);
-
-  Texts.WriteString(L,plain); Texts.WriteLn(L);
-*)
   END Test;
 	
 

@@ -1,3 +1,7 @@
+(* begin-module-short-description
+provides for batching commands.
+end-module-short-description *)
+
 (* begin-module-use-description
 Module Batch provides for automatic sequential execution of Oberon commands.
 

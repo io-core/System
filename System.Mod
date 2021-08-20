@@ -209,6 +209,38 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Oberon.Collect(0)
   END Free;
 
+
+  PROCEDURE Link*;
+    VAR T: Texts.Text;
+      beg, end, time, res: INTEGER;
+      S: Texts.Scanner;
+  BEGIN Texts.WriteString(W, "System.Link linking "); 
+    Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
+    IF (S.class = Texts.Char) & (S.codepoint = ORD("^")) THEN
+      Oberon.GetSelection(T, beg, end, time);
+      IF time >= 0 THEN Texts.OpenScanner(S, T, beg); Texts.Scan(S);
+        IF S.class = Texts.Name THEN 
+          Texts.WriteString(W, S.s); EndLine;
+          Modules.Link(S.s,res);
+        END
+      END
+    ELSIF S.class = Texts.Name THEN
+       Texts.WriteString(W, S.s); EndLine;
+       Modules.Link(S.s,res);
+    ELSE
+      Texts.WriteString(W, "???"); EndLine;
+      res:=9
+    END ;
+    IF res # 0 THEN
+      Texts.WriteString(W, "Link failed"); EndLine
+    ELSE
+      Texts.WriteString(W, "Link complete"); EndLine
+    END;
+    Oberon.Collect(0)
+  END Link;
+
+
+
   PROCEDURE FreeFonts*;
   BEGIN Texts.WriteString(W, "System.FreeFonts"); Fonts.Free; EndLine
   END FreeFonts;
@@ -341,6 +373,8 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
 
   PROCEDURE Watch*;
   BEGIN Texts.WriteString(W, "System.Watch"); Texts.WriteLn(W);
+(*  Texts.WriteString(W, "  stackOrg "); Texts.WriteHex(W, Kernel.stackOrg);
+    Texts.WriteString(W, "  heapOrg "); Texts.WriteHex(W, Kernel.heapOrg); EndLine; *)
     Texts.WriteString(W, "  Modules space (bytes)"); Texts.WriteInt(W, Modules.AllocPtr, 8);
     Texts.WriteInt(W, Modules.AllocPtr * 100 DIV Kernel.heapOrg, 4); Texts.Write(W, "%"); EndLine;
     Texts.WriteString(W, "  Heap speace"); Texts.WriteInt(W, Kernel.allocated, 8);
@@ -377,7 +411,7 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
       T: Texts.Text;
       S: Texts.Scanner;
       V: Viewers.Viewer;
-      X, Y: INTEGER;
+      X, Y, A: INTEGER;
   BEGIN GetArg(S);
     IF S.class = Texts.Name THEN
       Modules.Load(S.s, M);
@@ -391,6 +425,7 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
           REPEAT Texts.Write(W, ch); SYSTEM.GET(comadr, ch); INC(comadr)
           UNTIL ch = 0X;
           WHILE comadr MOD 4 # 0 DO INC(comadr) END ;
+          SYSTEM.GET(comadr, A); IF A MOD 4 # 0 THEN Texts.WriteString(W, " (PROCEDURE)") END;
           Texts.WriteLn(W); INC(comadr, 4); SYSTEM.GET(comadr, ch); INC(comadr)
         END ;
         Texts.Append(T, W.buf)
@@ -442,19 +477,79 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     END
   END ExtendDisplay;
 
+
+  PROCEDURE sayWhere(VAR mod: Modules.Module; adr: INTEGER);
+    VAR v,w,x,y:INTEGER; ch:CHAR;
+  BEGIN
+    mod := Modules.root;
+    WHILE (mod # NIL) & ((adr < mod.code) OR (adr >= mod.imp)) DO mod := mod.next END ;
+    IF mod # NIL THEN 
+      Texts.WriteString(W, " in "); Texts.WriteString(W, mod.name);
+      v:=mod.cmd; x:=v; y:=x; SYSTEM.GET(v,ch);
+      WHILE ch # 0X DO 
+        REPEAT INC(v); SYSTEM.GET(v, ch) UNTIL ch = 0X; 
+        REPEAT INC(v) UNTIL v MOD 4 = 0;
+        SYSTEM.GET(v, w); INC(v, 4); SYSTEM.GET(v,ch);
+        IF adr > w + mod.code THEN y:=x; x:=v END
+      END;
+      Texts.Write(W, ".");
+      SYSTEM.GET(y,ch); REPEAT Texts.Write(W, ch); INC(y); SYSTEM.GET(y, ch) UNTIL ch = 0X;
+    ELSE
+      Texts.WriteString(W, " in unknown procedure")
+    END;
+  END sayWhere;
+
+
+  PROCEDURE Trace(a,b,c: INTEGER);
+    VAR sp,sz,max,x,e:INTEGER; mod: Modules.Module;
+  BEGIN
+      sp:=a; sz:=b; max:=c;
+      IF sp > Kernel.stackOrg THEN
+        Texts.WriteString(W, " (confused stack) "); Texts.Append(Oberon.Log, W.buf);
+      ELSE
+        Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf); 
+        e:=1;
+        WHILE (sp <= Kernel.stackOrg) & (max > 0) DO
+          Texts.WriteString(W, " "); Texts.WriteHex(W, sp); SYSTEM.GET(sp, x); 
+          Texts.WriteString(W, " -> "); Texts.WriteHex(W, x); 
+          IF e = sz THEN 
+            Texts.WriteString(W, " * "); 
+            e := 0 
+          ELSIF e = 1 THEN
+            Texts.WriteInt(W, sz, 4);
+	    mod := Modules.root;
+            sayWhere(mod,x);
+          END;
+          Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf); INC(sp,4); DEC(max); INC(e);
+        END;
+      END;
+  END Trace;
+
+
   PROCEDURE Trap(VAR a: INTEGER; b: INTEGER);
-    VAR u, v, w: INTEGER; mod: Modules.Module;
-  BEGIN u := SYSTEM.REG(15); SYSTEM.GET(u - 4, v); w := v DIV 10H MOD 10H; (*trap number*)
+    VAR t, u, v, w, x, y: INTEGER; mod: Modules.Module; ch: CHAR;
+  BEGIN u := SYSTEM.REG(15); t:=SYSTEM.REG(14); SYSTEM.GET(u - 4, v); w := v DIV 10H MOD 10H; (*trap number*)
     IF w = 0 THEN Kernel.New(a, b)
-    ELSIF w = 8 THEN Kernel.Interface(a, b)
-    ELSE (*trap*) Texts.WriteLn(W); Texts.WriteString(W, "  pos "); Texts.WriteInt(W, v DIV 100H MOD 10000H, 4);
+(*    ELSIF w = 8 THEN Kernel.Interface(a, b) *)
+    ELSE (*trap*) 
+      Texts.WriteLn(W); Texts.WriteString(W, "  pos "); Texts.WriteInt(W, v DIV 100H MOD 10000H, 4);
       Texts.WriteString(W, "  TRAP"); Texts.WriteInt(W, w, 4); mod := Modules.root;
-      WHILE (mod # NIL) & ((u < mod.code) OR (u >= mod.imp)) DO mod := mod.next END ;
-      IF mod # NIL THEN Texts.WriteString(W, " in "); Texts.WriteString(W, mod.name) END ;
+      sayWhere(mod,u);
+(*
+      v:=mod.cmd; x:=v; y:=x; SYSTEM.GET(v,ch);
+      WHILE ch # 0X DO 
+        REPEAT INC(v); SYSTEM.GET(v, ch) UNTIL ch = 0X; 
+        REPEAT INC(v) UNTIL v MOD 4 = 0;
+        SYSTEM.GET(v, w); INC(v, 4); SYSTEM.GET(v,ch);
+        IF u > w + mod.code THEN y:=x; x:=v END
+      END;
+      Texts.Write(W, ".");
+      SYSTEM.GET(y,ch); REPEAT Texts.Write(W, ch); INC(y); SYSTEM.GET(y, ch) UNTIL ch = 0X;
+*)
       Texts.WriteString(W, " at"); Texts.WriteHex(W, u); Texts.WriteLn(W); 
-      u := SYSTEM.REG(14); Texts.WriteString(W, " stackPtr"); Texts.WriteHex(W, u); 
-      Texts.WriteString(W, " stackOrg"); Texts.WriteHex(W, Kernel.stackOrg); Texts.WriteLn(W); 
-      Texts.Append(Oberon.Log, W.buf); Oberon.Reset
+      Texts.WriteString(W, "  sp"); Texts.WriteHex(W, t); Texts.WriteString(W, " tos"); Texts.WriteHex(W, Kernel.stackOrg);
+      Trace(t,11,200);
+      Oberon.Reset
     END
   END Trap;
 
@@ -464,7 +559,8 @@ MODULE System; (*JG 3.10.90 / NW 12.10.93 / NW 20.6.2016*)
     Texts.WriteLn(W); Texts.Append(Oberon.Log, W.buf); Oberon.Reset
   END Abort;
   
-BEGIN Texts.OpenWriter(W);
+BEGIN (* OUCH(83);  OUCH(89);  OUCH(83);  OUCH(84);  OUCH(69);  OUCH(77);  OUCH(10);   *)
+  Texts.OpenWriter(W);
   Oberon.OpenLog(TextFrames.Text("")); OpenViewers;
   Kernel.Install(SYSTEM.ADR(Trap), 20H); Kernel.Install(SYSTEM.ADR(Abort), 0);
   jobCM.offset := 0;

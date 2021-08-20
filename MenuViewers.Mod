@@ -1,3 +1,7 @@
+(* begin-module-short-description
+implements  the menus above user text or graphics frames.
+end-module-short-description *)
+
 (* begin-module-use-description
 Module MenuViewers implements the top-of-pane 'menu' functionality of the Oberon user interface. 
 
